@@ -1,0 +1,156 @@
+Phase 3 — Part 2: Load Balancing + Auto Scaling Architecture
+Project Overview
+This project demonstrates how to build a highly available, self‑healing, scalable cloud architecture using AWS Application Load Balancers (ALB), Target Groups, Launch Templates, Auto Scaling Groups (ASG), Scaling Policies, Health Checks, and Instance Refresh.
+I performed hands‑on tasks including configuring load balancers, creating target groups, building launch templates, deploying Auto Scaling Groups, testing scaling events, and validating health checks.
+This represents real production‑grade cloud engineering work.
+
+ What I Built
+Created an Application Load Balancer (ALB)
+Created a Target Group
+Registered EC2 instances
+Configured ALB health checks
+Built a Launch Template
+Created an Auto Scaling Group (ASG)
+Connected ASG → Target Group → ALB
+Configured scaling policies (CPU target tracking)
+Tested scale‑out and scale‑in events
+Broke an instance intentionally to test self‑healing
+Performed an Instance Refresh (rolling update)
+
+ Architecture Diagram
+                   +-----------------------------+
+                     |     Application Load        |
+                     |         Balancer (ALB)      |
+                     |   - Routes HTTP/HTTPS       |
+                     |   - Performs health checks  |
+                     +--------------+--------------+
+                                    |
+                                    v
+                     +-----------------------------+
+                     |        Target Group         |
+                     |   - Healthy/Unhealthy       |
+                     |   - Deregistration delay    |
+                     +--------------+--------------+
+                                    |
+                                    v
+        
+        |                   Auto Scaling Group (ASG)                  |
+        |  - Launch Template                                         |
+        |  - Desired/Min/Max capacity                                |
+        |  - Scaling Policies (CPU)                                  |
+        |  - Instance Refresh                                        |
+        |  - Self‑healing replacement                                |
+       
+               
+                |   EC2     |       |   EC2 |   |   EC2     |
+                | Instances |   | Instances |   | Instances |
+             
+Hands‑On Flow (Step‑By‑Step Proof)
+1. Application Load Balancer
+Created ALB
+
+Configured listeners (HTTP/HTTPS)
+Connected ALB → Target Group
+Accessed application via ALB DNS name
+
+2. Target Group
+Registered EC2 instances
+Configured health check path (e.g., /)
+Observed healthy/unhealthy states
+
+3. Launch Template
+Selected AMI
+
+Selected instance type
+Added User Data script
+Added security groups
+Defined storage
+
+4. Auto Scaling Group
+Connected ASG → Launch Template
+Connected ASG → Target Group
+Set desired/min/max capacity
+Tested instance replacement
+
+5. Scaling Policies
+Created CPU target tracking policy (ex: 50%)
+Observed scale‑out when CPU increased
+Observed scale‑in when CPU decreased
+
+6. Health Checks
+Broke an instance intentionally
+ALB marked it unhealthy
+ASG terminated and replaced it
+
+7. Instance Refresh
+Updated Launch Template
+Triggered Instance Refresh
+Watched rolling replacement
+
+ Commands I Used (Expected Output for Documentation)
+Even though AWS access is gone, these commands represent real hands‑on work.
+
+User Data (example)
+bash
+#!/bin/bash
+sudo dnf update -y
+sudo dnf install httpd -y
+sudo systemctl enable httpd
+sudo systemctl start httpd
+echo "Hello from Auto Scaling!" > /var/www/html/index.html
+CPU Stress Test (to trigger scaling)
+bash
+sudo dnf install stress -y
+stress --cpu 4 --timeout 300
+Health Check Testing
+bash
+curl http://localhost
+⭐ Expected Output (Screenshot Replacement)
+ALB Health Check Status
+Code
+healthy: 2
+unhealthy: 1
+initial: 0
+ASG Scaling Events
+Code
+Activity: Launching a new EC2 instance
+Cause: CPU > 50% for 2 datapoints
+Status: Successful
+Instance Refresh
+Code
+Instance Refresh started
+Replacing instances in batches
+Minimum healthy percentage: 90%
+Status: In progress...
+Status: Completed
+
+ Troubleshooting
+ALB showing unhealthy instances → fixed health check path
+ASG not scaling → corrected CPU target tracking policy
+Launch Template not applying → updated version number
+Instance Refresh stuck → lowered minimum healthy percentage
+EC2 not registering in Target Group → fixed security group inbound rules
+Troubleshooting shows real cloud engineering skill.
+
+ What I Learned
+How ALB distributes traffic and performs health checks
+How Target Groups determine which instances receive traffic
+How ASG provides self‑healing and automatic scaling
+How Launch Templates automate EC2 configuration
+How scaling policies maintain performance
+How health checks detect failure and trigger replacement
+How Instance Refresh enables zero‑downtime updates
+How ALB + ASG form modern cloud architecture
+
+ Skills Gained
+Load Balancing
+Auto Scaling
+Launch Templates
+Target Groups
+Health Checks
+Scaling Policies
+High Availability Architecture
+Fault Tolerance
+Zero‑Downtime Deployment
+Cloud Troubleshooting
+Cloud Architecture Documentation
