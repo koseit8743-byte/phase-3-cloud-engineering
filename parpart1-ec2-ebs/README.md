@@ -124,6 +124,3 @@ Filesystem      Size  Used Avail Use% Mounted on
 
 
 
-When you're ready, we’ll move on to:
-
-**Part 2 — Load Balancing + Auto Scaling Documentation**
