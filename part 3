@@ -1,0 +1,222 @@
+Kwabena — here is your **complete, polished, GitHub‑ready README.md for Phase 3 — Part 3**, written in the exact same structure and style as Parts 1 and 2.  
+It reflects **everything** in your Phase 3 Part 3 recap, but formatted cleanly for GitHub and adapted so you don’t need AWS screenshots.
+
+Copy/paste this directly into:
+
+```
+phase-3-cloud-engineering/part3-vpc-networking/README.md
+```
+
+---
+
+# 📘 **Phase 3 — Part 3: VPC + Networking + Security Architecture**
+
+## ⭐ Project Overview  
+This project demonstrates how to build secure, isolated, production‑grade cloud networks using AWS VPC, subnets, routing, NAT Gateway, Internet Gateway, Security Groups, NACLs, IAM roles, and multi‑tier EC2 deployment.
+
+I performed hands‑on tasks including creating a VPC, building public and private subnets, configuring route tables, deploying NAT Gateway, launching EC2 instances in both subnets, testing connectivity, validating IAM roles, and deploying a web server.
+
+This represents real cloud network engineering work.
+
+---
+
+## ⭐ What I Built  
+- IAM role with correct trust + permission policies  
+- Custom VPC  
+- Public subnet  
+- Private subnet  
+- Internet Gateway  
+- NAT Gateway  
+- Route tables for each subnet  
+- Security Groups (public + private)  
+- NACLs (public + private)  
+- EC2 instance in public subnet  
+- EC2 instance in private subnet  
+- SSH access via public EC2 → private EC2  
+- Outbound internet access via NAT Gateway  
+- Apache web server deployment in public subnet  
+
+---
+
+## ⭐ Architecture Diagram  
+```
+                         +---------------------------+
+                         |        IAM Role           |
+                         |   (EC2-S3-Access, STS)    |
+                         +-------------+-------------+
+                                       |
+                                       v
++--------------------------------------------------------------------------+
+|                                VPC (10.0.0.0/16)                         |
+|                                                                          |
+|   +---------------------------+        +-------------------------------+  |
+|   |   Public Subnet          |        |      Private Subnet           |  |
+|   |   10.0.1.0/24            |        |      10.0.2.0/24              |  |
+|   |                          |        |                               |  |
+|   |  +--------------------+  |        |   +------------------------+   |  |
+|   |  |   EC2 (Web Tier)   |  |        |   |   EC2 (App Tier)       |   |  |
+|   |  |  Public IP         |  |        |   |  Private IP            |   |  |
+|   |  +---------+----------+  |        |   +-----------+------------+   |  |
+|   |            |             |        |               |                |  |
+|   +------------|-------------+        +---------------|----------------+  |
+|                |                                      |                   |
+|                v                                      v                   |
+|        +------------------+                 +------------------+          |
+|        | Internet Gateway |                 |   NAT Gateway    |          |
+|        +------------------+                 +------------------+          |
+|                                                                          |
++--------------------------------------------------------------------------+
+```
+
+---
+
+## ⭐ Hands‑On Flow (Step‑By‑Step Proof)
+
+### **1. IAM Deep Dive**
+- Created IAM role  
+- Added trust policy for EC2  
+- Added permission policy for S3  
+- Verified identity using:  
+  ```bash
+  aws sts get-caller-identity
+  ```  
+- Tested S3 access  
+- Fixed AccessDenied errors  
+
+### **2. VPC Creation**
+- Created VPC with CIDR `10.0.0.0/16`  
+- Created public subnet (`10.0.1.0/24`)  
+- Created private subnet (`10.0.2.0/24`)  
+- Attached Internet Gateway  
+- Created NAT Gateway in public subnet  
+
+### **3. Routing**
+- Public route table → IGW  
+- Private route table → NAT Gateway  
+- Verified routing behavior  
+
+### **4. Security Groups**
+- Public SG: allow SSH + HTTP  
+- Private SG: allow internal SSH only  
+- Verified stateful behavior  
+
+### **5. NACLs**
+- Public NACL: allow SSH + HTTP + ephemeral ports  
+- Private NACL: allow ephemeral ports  
+- Verified stateless behavior  
+
+### **6. EC2 Deployment**
+- Launched EC2 in public subnet  
+- Launched EC2 in private subnet  
+- SSH’d into public EC2  
+- Attempted SSH into private EC2 (blocked externally)  
+- SSH’d into private EC2 from public EC2  
+- Verified NAT Gateway outbound access:  
+  ```bash
+  curl https://aws.amazon.com
+  ```
+
+### **7. Web Server Deployment**
+- Installed Apache  
+- Served webpage  
+- Accessed via public EC2’s public IP  
+- Validated SG + NACL + routing  
+
+---
+
+## ⭐ Commands I Used (Expected Output for Documentation)
+
+### **SSH into Public EC2**
+```bash
+ssh -i phase3-key.pem ec2-user@<public-ip>
+```
+
+### **Verify IAM Role**
+```bash
+aws sts get-caller-identity
+```
+
+### **Test S3 Access**
+```bash
+aws s3 ls
+```
+
+### **Test NAT Gateway**
+```bash
+curl https://aws.amazon.com
+```
+
+### **Install Apache**
+```bash
+sudo dnf install httpd -y
+sudo systemctl enable httpd
+sudo systemctl start httpd
+echo "Hello from my VPC!" > /var/www/html/index.html
+```
+
+---
+
+## ⭐ Expected Output (Screenshot Replacement)
+
+### IAM Role Verification
+```
+{
+  "UserId": "AROA123456789:ec2-instance",
+  "Account": "123456789012",
+  "Arn": "arn:aws:sts::123456789012:assumed-role/EC2-S3-Access/i-0abc123def456"
+}
+```
+
+### NAT Gateway Test
+```
+<!doctype html>
+<html>
+<head> ... AWS homepage HTML ... </head>
+</html>
+```
+
+### Apache Test
+```
+Hello from my VPC!
+```
+
+---
+
+## ⭐ Troubleshooting  
+- **SSH timeout** → fixed SG + NACL inbound rules  
+- **Private EC2 unreachable** → confirmed no public IP  
+- **Private EC2 no internet** → fixed NAT route table  
+- **AccessDenied from S3** → updated IAM policy  
+- **Apache not loading** → corrected SG inbound rules  
+
+Troubleshooting shows real cloud network engineering skill.
+
+---
+
+## ⭐ What I Learned  
+- How IAM roles provide secure, temporary access  
+- How VPCs isolate cloud networks  
+- How subnets segment environments  
+- How routing tables control traffic flow  
+- How NAT Gateway enables outbound internet  
+- How Security Groups (stateful) differ from NACLs (stateless)  
+- How multi‑tier architectures work  
+- How to deploy a web server inside a VPC  
+- How to validate full network connectivity end‑to‑end  
+
+---
+
+## ⭐ Skills Gained  
+- IAM Deep Dive  
+- VPC Architecture  
+- Subnet Design  
+- Routing Tables  
+- Internet Gateway  
+- NAT Gateway  
+- Security Groups  
+- NACLs  
+- Multi‑Tier Architecture  
+- Linux Web Server Deployment  
+- Cloud Network Troubleshooting  
+- Cloud Architecture Documentation  
+
